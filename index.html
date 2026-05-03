@@ -1,0 +1,1709 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Control de Empresa</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <script>
+    // =========================================================================
+    // CONFIGURACIÓN DE FIREBASE (Base de datos principal)
+    // =========================================================================
+    window.MI_FIREBASE_CONFIG = 
+  apiKey: "AIzaSyBIFQvRQV532R0UUmBG3GgDVmG2mtcIr0E",
+  authDomain: "javis-pasteleria.firebaseapp.com",
+  projectId: "javis-pasteleria",
+  storageBucket: "javis-pasteleria.firebasestorage.app",
+  messagingSenderId: "609103655029",
+  appId: "1:609103655029:web:2b6f576c5360d81148c83c",
+  measurementId: "G-07748EBY64"
+; 
+  </script>
+</head>
+<body class="bg-gray-50 text-gray-900">
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    // --- ÍCONOS SVG ---
+    const IconHome = ({ size = 24, className = "" }) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>;
+    const IconWallet = ({ size = 24, className = "" }) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg>;
+    const IconPackage = ({ size = 24, className = "" }) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><line x1="16.5" y1="9.4" x2="7.5" y2="4.21"/><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>;
+    const IconBarChart = ({ size = 24, className = "" }) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg>;
+    const IconClipboard = ({ size = 24, className = "" }) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M9 14h6"/><path d="M9 10h6"/><path d="M9 18h6"/></svg>;
+    const IconTruck = ({ size = 24, className = "" }) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>;
+    const IconUtensils = ({ size = 24, className = "" }) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg>;
+    const IconArrowDownCircle = ({ size = 24, className = "" }) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10"/><polyline points="8 12 12 16 16 12"/><line x1="12" y1="8" x2="12" y2="16"/></svg>;
+    const IconArrowUpCircle = ({ size = 24, className = "" }) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10"/><polyline points="16 12 12 8 8 12"/><line x1="12" y1="16" x2="12" y2="8"/></svg>;
+    const IconPlusCircle = ({ size = 24, className = "" }) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>;
+    const IconCart = ({ size = 24, className = "" }) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>;
+    const IconTrendingUp = ({ size = 24, className = "" }) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>;
+    const IconTrendingDown = ({ size = 24, className = "" }) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/><polyline points="17 18 23 18 23 12"/></svg>;
+    const IconHistory = ({ size = 24, className = "" }) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg>;
+    const IconX = ({ size = 24, className = "" }) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>;
+    const IconCheckCircle = ({ size = 24, className = "" }) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>;
+    const IconTrash = ({ size = 24, className = "" }) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>;
+    const IconSettings = ({ size = 24, className = "" }) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>;
+    const IconCamera = ({ size = 24, className = "" }) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>;
+
+    function App() {
+      // Navegación y Modales
+      const [activeTab, setActiveTab] = useState('home');
+      const [activeForm, setActiveForm] = useState(null);
+      const [errorMessage, setErrorMessage] = useState("");
+      const [successMessage, setSuccessMessage] = useState("");
+      const [confirmDialog, setConfirmDialog] = useState(null); 
+      
+      // Estado de Configuración y Firebase
+      const [webhookUrl, setWebhookUrl] = useState(localStorage.getItem('googleSheetsWebhook') || '');
+      const [db, setDb] = useState(null);
+      const [user, setUser] = useState(null);
+      const [fbModules, setFbModules] = useState(null);
+
+      // Datos
+      const [transactions, setTransactions] = useState([]);
+      const [inventoryLogs, setInventoryLogs] = useState([]);
+      const [availableProducts, setAvailableProducts] = useState([]);
+      const [stockByProduct, setStockByProduct] = useState({});
+      const [suppliersData, setSuppliersData] = useState([]);
+      const [recipes, setRecipes] = useState([]);
+      const [selectedProduct, setSelectedProduct] = useState('');
+      const [payingTx, setPayingTx] = useState(null);
+      const [dailyReportData, setDailyReportData] = useState(null);
+
+      // --- INICIALIZACIÓN DE FIREBASE ---
+      useEffect(() => {
+        let unsubscribeAuth = () => {};
+        const initFirebase = async () => {
+          try {
+            let configStr = null;
+            if (typeof __firebase_config !== 'undefined') configStr = __firebase_config;
+            else if (window.MI_FIREBASE_CONFIG) configStr = JSON.stringify(window.MI_FIREBASE_CONFIG);
+
+            if (!configStr) {
+              console.warn("Sin Firebase Config. Modo local temporal.");
+              return;
+            }
+            const firebaseConfig = JSON.parse(configStr);
+            const dynamicImport = new Function('url', 'return import(url)');
+            const appMod = await dynamicImport('https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js');
+            const authMod = await dynamicImport('https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js');
+            const fsMod = await dynamicImport('https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js');
+
+            setFbModules({ fsMod });
+            const app = appMod.initializeApp(firebaseConfig);
+            const auth = authMod.getAuth(app);
+            const firestore = fsMod.getFirestore(app);
+            setDb(firestore);
+
+            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+              await authMod.signInWithCustomToken(auth, __initial_auth_token);
+            } else {
+              await authMod.signInAnonymously(auth);
+            }
+            unsubscribeAuth = authMod.onAuthStateChanged(auth, (u) => setUser(u));
+          } catch (error) {
+            console.error("Error BD:", error);
+            showError("No se pudo conectar a la base de datos.");
+          }
+        };
+        initFirebase();
+        return () => unsubscribeAuth();
+      }, []);
+
+      // --- LECTURA DE DATOS DESDE FIREBASE ---
+      useEffect(() => {
+        if (!user || !db || !fbModules) return;
+        const { collection, onSnapshot } = fbModules.fsMod;
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'mi-empresa-app';
+
+        const txRef = collection(db, 'artifacts', appId, 'users', user.uid, 'transactions');
+        const unsubTx = onSnapshot(txRef, (snap) => {
+            const data = [];
+            snap.forEach(d => data.push({ id: d.id, ...d.data() }));
+            data.sort((a, b) => new Date(b.date) - new Date(a.date));
+            setTransactions(data);
+        });
+
+        const invRef = collection(db, 'artifacts', appId, 'users', user.uid, 'inventoryLogs');
+        const unsubInv = onSnapshot(invRef, (snap) => {
+            const data = [];
+            snap.forEach(d => data.push({ id: d.id, ...d.data() }));
+            data.sort((a, b) => new Date(b.date) - new Date(a.date));
+            setInventoryLogs(data);
+        });
+
+        const prodRef = collection(db, 'artifacts', appId, 'users', user.uid, 'products');
+        const unsubProd = onSnapshot(prodRef, (snap) => {
+            const products = [];
+            const stockMap = {};
+            snap.forEach(d => {
+                const data = d.data();
+                products.push(data.name);
+                stockMap[data.name] = data.stock;
+            });
+            setAvailableProducts(products);
+            setStockByProduct(stockMap);
+        });
+
+        const suppRef = collection(db, 'artifacts', appId, 'users', user.uid, 'suppliers');
+        const unsubSupp = onSnapshot(suppRef, (snap) => {
+            const data = [];
+            snap.forEach(d => data.push({ id: d.id, ...d.data() }));
+            setSuppliersData(data);
+        });
+
+        const recRef = collection(db, 'artifacts', appId, 'users', user.uid, 'recipes');
+        const unsubRec = onSnapshot(recRef, (snap) => {
+            const data = [];
+            snap.forEach(d => data.push({ id: d.id, ...d.data() }));
+            data.sort((a, b) => new Date(b.date) - new Date(a.date));
+            setRecipes(data);
+        });
+
+        return () => { unsubTx(); unsubInv(); unsubProd(); unsubSupp(); unsubRec(); };
+      }, [user, db, fbModules]);
+
+      // --- FUNCIONES DE GUARDADO BÁSICAS ---
+      const saveToDb = async (collectionName, docId, data) => {
+        if (db && user && fbModules) {
+          const { doc, setDoc } = fbModules.fsMod;
+          const appId = typeof __app_id !== 'undefined' ? __app_id : 'mi-empresa-app';
+          const docRef = doc(db, 'artifacts', appId, 'users', user.uid, collectionName, docId);
+          await setDoc(docRef, data);
+        }
+      };
+
+      const deleteFromDb = async (collectionName, docId) => {
+        if (db && user && fbModules) {
+          const { doc, deleteDoc } = fbModules.fsMod;
+          const appId = typeof __app_id !== 'undefined' ? __app_id : 'mi-empresa-app';
+          const docRef = doc(db, 'artifacts', appId, 'users', user.uid, collectionName, docId);
+          await deleteDoc(docRef);
+        }
+      };
+
+      // --- WEBHOOK GOOGLE SHEETS ---
+      const sendToGoogleSheets = async (dataPayload) => {
+        const url = webhookUrl || window.GOOGLE_SHEETS_WEBHOOK_URL;
+        if (!url) return;
+        try {
+          await fetch(url, {
+            method: 'POST', 
+            mode: 'no-cors', 
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' }, 
+            body: JSON.stringify(dataPayload)
+          });
+        } catch (e) { console.error("Error enviando a Sheets:", e); }
+      };
+
+      // --- DESCARGAR EXCEL / CSV ---
+      const downloadCSV = () => {
+          let csvContent = "data:text/csv;charset=utf-8,";
+          csvContent += "Fecha,Tipo,Descripcion,Unidades,Monto,Estado,Metodo\n";
+          
+          transactions.forEach(tx => {
+              const date = new Date(tx.date).toLocaleDateString('es-ES');
+              let tipo = tx.type === 'income' ? 'Ingreso' : 'Gasto';
+              if (tx.isSale) tipo = 'Venta';
+              if (tx.description.toLowerCase().includes("compra en")) tipo = 'Compra';
+
+              const cleanDesc = tx.description.replace(/,/g, " ").replace(/\n/g, " ");
+              const unids = tx.saleDetails ? tx.saleDetails.units : '-';
+              
+              const row = `${date},${tipo},${cleanDesc},${unids},${tx.amount},${tx.status},${tx.paymentMethod || '-'}`;
+              csvContent += row + "\n";
+          });
+          
+          const encodedUri = encodeURI(csvContent);
+          const link = document.createElement("a");
+          link.setAttribute("href", encodedUri);
+          link.setAttribute("download", `Respaldo_Historial_${new Date().toISOString().split('T')[0]}.csv`);
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          showSuccess("Respaldo descargado exitosamente");
+      };
+
+      // --- CÁLCULOS GENERALES ---
+      const showError = (msg) => { setErrorMessage(msg); setTimeout(() => setErrorMessage(""), 4000); };
+      const showSuccess = (msg) => { setSuccessMessage(msg); setTimeout(() => setSuccessMessage(""), 3000); };
+
+      const totalIncome = transactions.filter(t => t.type === 'income' && t.status !== 'pendiente').reduce((acc, t) => acc + t.amount, 0);
+      const totalExpense = transactions.filter(t => t.type === 'expense' && t.status !== 'pendiente').reduce((acc, t) => acc + t.amount, 0);
+      const balance = totalIncome - totalExpense;
+
+      const pendingToCollect = transactions.filter(t => t.type === 'income' && t.status === 'pendiente').reduce((acc, t) => acc + t.amount, 0);
+      const pendingToPay = transactions.filter(t => t.type === 'expense' && t.status === 'pendiente').reduce((acc, t) => acc + t.amount, 0);
+
+      const formatMoney = (amount) => new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP', maximumFractionDigits: 0 }).format(amount);
+      const formatDate = (dateStr) => new Intl.DateTimeFormat('es-ES', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }).format(new Date(dateStr));
+
+      // --- MANEJADORES DE FORMULARIOS ---
+
+      const handleSavePurchase = (purchaseData) => {
+          const now = new Date().toISOString();
+          const baseId = Date.now().toString();
+
+          purchaseData.items.forEach((item, index) => {
+              const productName = item.productName.trim();
+              const units = parseFloat(item.units);
+              const cost = parseFloat(item.totalCost);
+
+              const suppLog = { id: `${baseId}-supp-${index}`, supplier: purchaseData.supplier, product: productName, cost: cost, units: units, date: now };
+              setSuppliersData(prev => [...prev, suppLog]);
+              saveToDb('suppliers', suppLog.id, suppLog);
+
+              setStockByProduct(prev => {
+                  const newStock = (prev[productName] || 0) + units;
+                  saveToDb('products', productName, { name: productName, stock: newStock });
+                  return { ...prev, [productName]: newStock };
+              });
+              
+              if (!availableProducts.includes(productName)) setAvailableProducts(prev => [...prev, productName]);
+
+              const invLog = { id: `${baseId}-inv-${index}`, type: 'production', product: productName, units: units, description: `Compra: ${purchaseData.supplier}`, date: now };
+              setInventoryLogs(prev => [invLog, ...prev]);
+              saveToDb('inventoryLogs', invLog.id, invLog);
+          });
+
+          const txLog = {
+              id: `${baseId}-tx`, type: 'expense', amount: purchaseData.totalAmount,
+              description: `Compra en ${purchaseData.supplier} (${purchaseData.items.length} prod.)`,
+              status: purchaseData.status, date: now
+          };
+          setTransactions(prev => [txLog, ...prev]);
+          saveToDb('transactions', txLog.id, txLog);
+
+          sendToGoogleSheets({ fecha: now, tipo: 'Compra', descripcion: txLog.description, monto: txLog.amount, estado: txLog.status, unidades: '-' });
+          setActiveForm(null);
+          showSuccess("Compra completada y stock actualizado");
+      };
+
+      // GUARDADO DE VENTA DIARIA (Bulk)
+      const handleSaveDailySale = (salesItems) => {
+          const now = new Date().toISOString();
+          const baseId = Date.now();
+
+          let tEfectivo = 0;
+          let tTransf = 0;
+          let tPendiente = 0;
+
+          salesItems.forEach((item, index) => {
+              const productName = item.productName.trim();
+              const units = parseFloat(item.units);
+              const amount = parseFloat(item.amount);
+              const status = item.status;
+              const paymentMethod = item.paymentMethod;
+              const description = item.description || `Venta Diaria de ${productName}`;
+
+              if (status === 'pagado') {
+                  if (paymentMethod === 'Efectivo') tEfectivo += amount;
+                  else if (paymentMethod === 'Transferencia') tTransf += amount;
+              } else {
+                  tPendiente += amount;
+              }
+
+              // Descontar Stock
+              setStockByProduct(prev => {
+                  const newStock = (prev[productName] || 0) - units;
+                  saveToDb('products', productName, { name: productName, stock: newStock });
+                  return { ...prev, [productName]: newStock };
+              });
+
+              // Log Inventario
+              const invLogId = `${baseId}-inv-${index}`;
+              const newLog = { id: invLogId, type: 'sale', product: productName, units, description, date: now };
+              setInventoryLogs(prev => [newLog, ...prev]);
+              saveToDb('inventoryLogs', invLogId, newLog);
+
+              // Transacción Financiera
+              const txId = `${baseId}-tx-${index}`;
+              const newTx = { 
+                  id: txId, type: 'income', amount: amount, 
+                  description: `${description} (${units} unid.)`, status, paymentMethod, date: now,
+                  isSale: true, saleDetails: { product: productName, units, invLogId }
+              };
+              setTransactions(prev => [newTx, ...prev]);
+              saveToDb('transactions', txId, newTx);
+
+              // Google Sheets individual por producto vendido en la carga
+              sendToGoogleSheets({ 
+                  fecha: now, tipo: 'Venta Diaria', descripcion: `${description} - ${productName}`, 
+                  monto: amount, estado: status, unidades: units, metodo: paymentMethod 
+              });
+          });
+
+          // Mostramos el reporte oficial
+          setDailyReportData({ 
+              totalEfectivo: tEfectivo, 
+              totalTransf: tTransf, 
+              totalPendiente: tPendiente, 
+              total: tEfectivo + tTransf + tPendiente 
+          });
+          setActiveForm('dailyReport');
+      };
+
+      const handleAddTransaction = (e, type) => {
+        e.preventDefault();
+        const amount = parseFloat(e.target.amount.value);
+        const description = e.target.description.value;
+        const status = e.target.status.value; 
+        if (!amount || amount <= 0) return;
+
+        const newTx = { id: Date.now().toString(), type, amount, description, status, date: new Date().toISOString() };
+        setTransactions(prev => [newTx, ...prev]);
+        saveToDb('transactions', newTx.id, newTx);
+        
+        sendToGoogleSheets({ fecha: newTx.date, tipo: type === 'income' ? 'Ingreso Extra' : 'Gasto', descripcion: description, monto: amount, estado: status, unidades: '-' });
+        setActiveForm(null);
+        showSuccess("Guardado exitosamente");
+      };
+
+      const handleAddProduction = (e) => {
+        e.preventDefault();
+        const units = parseInt(e.target.units.value);
+        const productName = e.target.product.value.trim();
+        if (!units || units <= 0 || !productName) return;
+
+        const newStock = (stockByProduct[productName] || 0) + units;
+        if (!availableProducts.includes(productName)) setAvailableProducts(prev => [...prev, productName]);
+        
+        setStockByProduct(prev => ({ ...prev, [productName]: newStock }));
+        saveToDb('products', productName, { name: productName, stock: newStock });
+
+        const newLog = { id: Date.now().toString(), type: 'production', product: productName, units, description: `Producción: ${productName}`, date: new Date().toISOString() };
+        setInventoryLogs(prev => [newLog, ...prev]);
+        saveToDb('inventoryLogs', newLog.id, newLog);
+        
+        sendToGoogleSheets({ fecha: newLog.date, tipo: 'Producción', descripcion: productName, monto: 0, estado: 'completado', unidades: units });
+        setActiveForm(null);
+        showSuccess("Producción registrada");
+      };
+
+      const handleAddSale = (e) => {
+        e.preventDefault();
+        const units = parseInt(e.target.units.value);
+        const totalAmount = parseFloat(e.target.amount.value);
+        const productName = e.target.product.value;
+        const description = e.target.description.value || `Venta de ${productName}`;
+        const status = e.target.status.value; 
+        const paymentMethod = e.target.paymentMethod.value;
+        
+        if (!units || units <= 0 || !totalAmount || totalAmount <= 0) return;
+        if (units > stockByProduct[productName]) {
+          showError(`No hay suficiente stock de ${productName} para esta venta.`);
+          return;
+        }
+
+        const now = new Date().toISOString();
+        const baseId = Date.now().toString();
+
+        const newStock = stockByProduct[productName] - units;
+        setStockByProduct(prev => ({ ...prev, [productName]: newStock }));
+        saveToDb('products', productName, { name: productName, stock: newStock });
+
+        const newLog = { id: baseId + '-inv', type: 'sale', product: productName, units, description, date: now };
+        setInventoryLogs(prev => [newLog, ...prev]);
+        saveToDb('inventoryLogs', newLog.id, newLog);
+
+        const newTx = { 
+            id: baseId + '-tx', type: 'income', amount: totalAmount, 
+            description: `${description} (${units} unid.)`, status, paymentMethod, date: now,
+            isSale: true, saleDetails: { product: productName, units, invLogId: newLog.id }
+        };
+        setTransactions(prev => [newTx, ...prev]);
+        saveToDb('transactions', newTx.id, newTx);
+
+        sendToGoogleSheets({ fecha: now, tipo: 'Venta', descripcion: `${description} - ${productName}`, monto: totalAmount, estado: status, unidades: units, metodo: paymentMethod });
+        setActiveForm(null);
+        showSuccess("Venta registrada");
+      };
+
+      const handleSaveRecipe = (newRecipe) => {
+          setRecipes(prev => [newRecipe, ...prev]);
+          saveToDb('recipes', newRecipe.id, newRecipe);
+          setActiveForm(null);
+          showSuccess("Receta guardada");
+      };
+
+      const handleDeleteRecipe = (id) => {
+          setRecipes(prev => prev.filter(r => r.id !== id));
+          deleteFromDb('recipes', id);
+          showSuccess("Receta eliminada");
+      };
+
+      const handleMarkAsPaid = (txId, paymentMethod) => {
+        const tx = transactions.find(t => t.id === txId);
+        if (!tx) return;
+        const now = new Date().toISOString();
+        const updatedTx = { ...tx, status: 'pagado', paymentDate: now, paymentMethod };
+        setTransactions(prev => prev.map(t => t.id === txId ? updatedTx : t));
+        saveToDb('transactions', txId, updatedTx);
+        
+        sendToGoogleSheets({ 
+            fecha: now, 
+            tipo: tx.type === 'income' ? 'Cobro de Deuda' : 'Pago de Deuda', 
+            descripcion: `Pago completado: ${tx.description}`, 
+            monto: tx.amount, 
+            estado: 'pagado', 
+            unidades: tx.saleDetails ? tx.saleDetails.units : '-',
+            metodo: paymentMethod
+        });
+
+        setPayingTx(null);
+        showSuccess("Marcado como pagado");
+      };
+
+      const handleDeleteSupplier = (id) => {
+          setSuppliersData(prev => prev.filter(s => s.id !== id));
+          deleteFromDb('suppliers', id);
+      };
+
+      const requestDeleteTransaction = (tx) => {
+          let message = `¿Estás seguro de eliminar el registro de "${tx.description}"?`;
+          if (tx.isSale && tx.saleDetails) {
+              message = `Se eliminará esta venta y se devolverán automáticamente ${tx.saleDetails.units} unidades de "${tx.saleDetails.product}" a tu stock.`;
+          }
+          setConfirmDialog({ message, onConfirm: () => executeDeleteTransaction(tx) });
+      };
+
+      const executeDeleteTransaction = (tx) => {
+          if (tx.isSale && tx.saleDetails) {
+              const { product, units, invLogId } = tx.saleDetails;
+              setStockByProduct(prev => {
+                  const newStock = (prev[product] || 0) + units;
+                  saveToDb('products', product, { name: product, stock: newStock });
+                  return { ...prev, [product]: newStock };
+              });
+              setInventoryLogs(prev => prev.filter(log => log.id !== invLogId));
+              deleteFromDb('inventoryLogs', invLogId);
+          }
+          setTransactions(prev => prev.filter(t => t.id !== tx.id));
+          deleteFromDb('transactions', tx.id);
+          showSuccess("Registro eliminado");
+      };
+
+      const openForm = (formName) => {
+        if ((formName === 'sale' || formName === 'dailySale') && availableProducts.length === 0) {
+          showError("Primero debes registrar stock o producir."); return;
+        }
+        if (availableProducts.length > 0) setSelectedProduct(availableProducts[0]);
+        setActiveForm(formName);
+      };
+
+
+      // --- COMPONENTES DE VISTAS Y MODALES ---
+
+      const Header = ({ title }) => (
+        <div className="bg-indigo-600 text-white p-6 rounded-b-3xl shadow-md mb-6 pt-10 flex justify-between items-center">
+          <h1 className="text-2xl font-bold">{title}</h1>
+          <button onClick={() => setActiveForm('settings')} className="p-2 bg-indigo-500 rounded-full hover:bg-indigo-400 active:bg-indigo-400 transition-colors shadow-sm">
+             <IconSettings size={22} />
+          </button>
+        </div>
+      );
+
+      const NotificationToasts = () => (
+          <>
+            {errorMessage && (
+              <div className="fixed top-6 left-4 right-4 bg-red-600 text-white p-4 rounded-xl shadow-2xl z-50 flex justify-between items-center animate-in slide-in-from-top-4">
+                <span className="font-medium text-sm">{errorMessage}</span>
+                <button onClick={() => setErrorMessage("")}><IconX size={20} /></button>
+              </div>
+            )}
+            {successMessage && (
+              <div className="fixed top-6 left-4 right-4 bg-emerald-600 text-white p-4 rounded-xl shadow-2xl z-50 flex justify-between items-center animate-in slide-in-from-top-4">
+                <span className="font-medium text-sm">{successMessage}</span>
+                <button onClick={() => setSuccessMessage("")}><IconX size={20} /></button>
+              </div>
+            )}
+          </>
+      );
+
+      const ConfirmModal = () => {
+          if (!confirmDialog) return null;
+          return (
+              <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
+                  <div className="bg-white w-full max-w-sm rounded-3xl p-6 shadow-xl slide-in-from-bottom-4">
+                      <h3 className="text-lg font-bold text-gray-800 mb-2">Confirmar</h3>
+                      <p className="text-gray-600 mb-6 text-sm leading-relaxed">{confirmDialog.message}</p>
+                      <div className="flex gap-3">
+                          <button onClick={() => setConfirmDialog(null)} className="flex-1 py-3 bg-gray-100 text-gray-700 font-semibold rounded-xl active:bg-gray-200">Cancelar</button>
+                          <button onClick={() => { confirmDialog.onConfirm(); setConfirmDialog(null); }} className="flex-1 py-3 bg-red-600 text-white font-semibold rounded-xl active:bg-red-700">Aceptar</button>
+                      </div>
+                  </div>
+              </div>
+          );
+      };
+
+      const FormModal = ({ title, children, onClose }) => (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 animate-in fade-in duration-200">
+          <div className="bg-white w-full max-w-md rounded-t-3xl sm:rounded-3xl p-6 pb-12 sm:pb-6 shadow-xl slide-in-from-bottom-full sm:slide-in-from-bottom-0 max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-xl font-bold text-gray-800">{title}</h3>
+              {onClose && (
+                <button onClick={onClose} className="p-2 bg-gray-100 rounded-full text-gray-500 active:bg-gray-200"><IconX size={20} /></button>
+              )}
+            </div>
+            {children}
+          </div>
+        </div>
+      );
+
+      // --- FORMULARIOS COMPLEJOS ---
+
+      const DailySaleForm = ({ onSave, onClose }) => {
+          const [items, setItems] = useState([{ productName: '', units: '', amount: '', status: 'pagado', paymentMethod: 'Efectivo', description: '' }]);
+
+          const handleUpdateItem = (idx, field, value) => {
+              const newItems = [...items];
+              newItems[idx][field] = value;
+              setItems(newItems);
+          };
+
+          const handleRemoveItem = (idx) => {
+              const newItems = [...items];
+              newItems.splice(idx, 1);
+              setItems(newItems);
+          };
+
+          let tEfectivo = 0, tTransf = 0, tPendiente = 0;
+          items.forEach(item => {
+              const amt = parseFloat(item.amount) || 0;
+              if (item.status === 'pagado') {
+                  if (item.paymentMethod === 'Efectivo') tEfectivo += amt;
+                  else if (item.paymentMethod === 'Transferencia') tTransf += amt;
+              } else {
+                  tPendiente += amt;
+              }
+          });
+
+          const handleSubmit = (e) => {
+              e.preventDefault();
+              
+              const validItems = [];
+              const stockCheck = {};
+              
+              for (let i = 0; i < items.length; i++) {
+                  const item = items[i];
+                  if (!item.productName || !item.units || !item.amount) continue;
+                  
+                  const u = parseFloat(item.units);
+                  stockCheck[item.productName] = (stockCheck[item.productName] || 0) + u;
+                  validItems.push(item);
+              }
+
+              if (validItems.length === 0) {
+                  showError("Agrega al menos un producto válido para registrar.");
+                  return;
+              }
+
+              for (let prod in stockCheck) {
+                  const available = stockByProduct[prod] || 0;
+                  if (stockCheck[prod] > available) {
+                      showError(`Stock insuficiente de "${prod}". Quieres registrar ${stockCheck[prod]} pero solo te quedan ${available}.`);
+                      return;
+                  }
+              }
+
+              onSave(validItems);
+          };
+
+          return (
+              <FormModal title="Carga de Venta Diaria" onClose={onClose}>
+                  <form onSubmit={handleSubmit} className="space-y-4">
+                      <div className="max-h-[45vh] overflow-y-auto space-y-3 pr-2">
+                          {items.map((item, idx) => (
+                              <div key={idx} className="bg-gray-50 p-3 rounded-xl border border-gray-200 space-y-2 relative">
+                                  {items.length > 1 && (
+                                      <button type="button" onClick={() => handleRemoveItem(idx)} className="absolute top-2 right-2 text-red-400 hover:text-red-600">
+                                          <IconX size={18}/>
+                                      </button>
+                                  )}
+                                  <div>
+                                      <label className="text-[10px] text-gray-500 uppercase font-bold">Producto Vendido</label>
+                                      <select required value={item.productName} onChange={e => handleUpdateItem(idx, 'productName', e.target.value)} className="w-full p-2 text-sm border border-gray-300 rounded-lg outline-none bg-white">
+                                          <option value="">Seleccionar...</option>
+                                          {availableProducts.map(prod => <option key={prod} value={prod}>{prod} (Disp: {stockByProduct[prod]})</option>)}
+                                      </select>
+                                  </div>
+                                  <div className="grid grid-cols-2 gap-2">
+                                      <div>
+                                          <label className="text-[10px] text-gray-500 uppercase font-bold">Unidades</label>
+                                          <input type="number" step="any" required value={item.units} onChange={e => handleUpdateItem(idx, 'units', e.target.value)} className="w-full p-2 text-sm border border-gray-300 rounded-lg outline-none" placeholder="Ej. 2" />
+                                      </div>
+                                      <div>
+                                          <label className="text-[10px] text-gray-500 uppercase font-bold">Total Pagado ($)</label>
+                                          <input type="number" step="any" required value={item.amount} onChange={e => handleUpdateItem(idx, 'amount', e.target.value)} className="w-full p-2 text-sm border border-gray-300 rounded-lg outline-none" placeholder="Ej. 5000" />
+                                      </div>
+                                  </div>
+                                  <div className="grid grid-cols-2 gap-2">
+                                      <div>
+                                          <label className="text-[10px] text-gray-500 uppercase font-bold">Estado</label>
+                                          <select required value={item.status} onChange={e => handleUpdateItem(idx, 'status', e.target.value)} className="w-full p-2 text-sm border border-gray-300 rounded-lg outline-none bg-white">
+                                              <option value="pagado">Pagado</option>
+                                              <option value="pendiente">Por Cobrar</option>
+                                          </select>
+                                      </div>
+                                      {item.status === 'pagado' && (
+                                          <div>
+                                              <label className="text-[10px] text-gray-500 uppercase font-bold">Método</label>
+                                              <select required value={item.paymentMethod} onChange={e => handleUpdateItem(idx, 'paymentMethod', e.target.value)} className="w-full p-2 text-sm border border-gray-300 rounded-lg outline-none bg-white">
+                                                  <option value="Efectivo">Efectivo</option>
+                                                  <option value="Transferencia">Transferencia</option>
+                                              </select>
+                                          </div>
+                                      )}
+                                  </div>
+                                  <div>
+                                      <input type="text" value={item.description} onChange={e => handleUpdateItem(idx, 'description', e.target.value)} className="w-full p-2 text-sm border border-gray-300 rounded-lg outline-none" placeholder="Nota / Cliente (Opcional)" />
+                                  </div>
+                              </div>
+                          ))}
+                          <button type="button" onClick={() => setItems([...items, { productName: '', units: '', amount: '', status: 'pagado', paymentMethod: 'Efectivo', description: '' }])} className="text-indigo-600 text-sm font-bold flex items-center gap-1">+ Agregar otra venta</button>
+                      </div>
+
+                      <div className="bg-indigo-50 p-3 rounded-xl border border-indigo-100 mt-2 space-y-1">
+                          <h4 className="font-bold text-indigo-900 text-sm mb-1">Resumen del Día</h4>
+                          <div className="flex justify-between text-sm"><span className="text-gray-600">Efectivo:</span><span className="font-semibold text-green-600">{formatMoney(tEfectivo)}</span></div>
+                          <div className="flex justify-between text-sm"><span className="text-gray-600">Transferencia:</span><span className="font-semibold text-blue-600">{formatMoney(tTransf)}</span></div>
+                          <div className="flex justify-between text-sm"><span className="text-gray-600">Por Cobrar:</span><span className="font-semibold text-red-500">{formatMoney(tPendiente)}</span></div>
+                          <hr className="border-indigo-200 my-1"/>
+                          <div className="flex justify-between font-bold"><span className="text-indigo-900">Total en Ventas:</span><span className="text-indigo-700">{formatMoney(tEfectivo + tTransf + tPendiente)}</span></div>
+                      </div>
+
+                      <button type="submit" className="w-full bg-indigo-600 text-white font-bold py-4 rounded-xl mt-2 active:bg-indigo-700">Guardar Venta Diaria</button>
+                  </form>
+              </FormModal>
+          );
+      };
+
+      const PurchaseForm = ({ onSave, onClose }) => {
+          const [supplier, setSupplier] = useState('');
+          const [status, setStatus] = useState('pagado');
+          const [items, setItems] = useState([{ productName: '', units: '', unitPrice: '', totalCost: '', lastEdited: 'totalCost' }]);
+          const [isScanning, setIsScanning] = useState(false);
+          const fileInputRef = React.useRef(null);
+
+          const processReceiptImage = async (base64ImageData, mimeType) => {
+              // Pegar API Key proporcionada por Google AI Studio
+              const apiKey = ""; 
+              const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+              const prompt = `Analiza esta boleta o factura de compra. Extrae los productos y devuelve un JSON estrictamente estructurado como un array de objetos.`;
+
+              const payload = {
+                  contents: [{
+                      role: "user",
+                      parts: [
+                          { text: prompt },
+                          { inlineData: { mimeType: mimeType || "image/jpeg", data: base64ImageData } }
+                      ]
+                  }],
+                  generationConfig: {
+                      responseMimeType: "application/json",
+                      responseSchema: {
+                          type: "ARRAY",
+                          items: {
+                              type: "OBJECT",
+                              properties: {
+                                  productName: { type: "STRING" },
+                                  units: { type: "NUMBER" },
+                                  totalCost: { type: "NUMBER" }
+                              }
+                          }
+                      }
+                  }
+              };
+
+              let retries = 5;
+              let delay = 1000;
+              while (retries > 0) {
+                  try {
+                      const response = await fetch(url, {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify(payload)
+                      });
+                      if (!response.ok) {
+                          const errText = await response.text();
+                          throw new Error(`HTTP error! status: ${response.status} - ${errText}`);
+                      }
+                      const result = await response.json();
+                      const textContent = result.candidates?.[0]?.content?.parts?.[0]?.text;
+                      if (!textContent) throw new Error("Respuesta vacía del modelo");
+                      return JSON.parse(textContent);
+                  } catch (e) {
+                      retries--;
+                      if (retries === 0) {
+                          console.error("Error final en IA:", e);
+                          throw e;
+                      }
+                      await new Promise(r => setTimeout(r, delay));
+                      delay *= 2;
+                  }
+              }
+          };
+
+          const handleImageUpload = (e) => {
+              const file = e.target.files[0];
+              if (!file) return;
+              const mimeType = file.type;
+              setIsScanning(true);
+              const reader = new FileReader();
+              reader.onloadend = async () => {
+                  try {
+                      const base64String = reader.result.split(',')[1];
+                      const extractedItems = await processReceiptImage(base64String, mimeType);
+                      
+                      if (extractedItems && extractedItems.length > 0) {
+                          const formattedItems = extractedItems.map(item => {
+                              const u = parseFloat(item.units) || 1;
+                              const tCost = parseFloat(item.totalCost) || 0;
+                              return {
+                                  productName: item.productName || '',
+                                  units: u,
+                                  unitPrice: u > 0 ? Math.round(tCost / u) : '',
+                                  totalCost: tCost || '',
+                                  lastEdited: 'totalCost'
+                              };
+                          });
+                          
+                          setItems(prev => {
+                              if (prev.length === 1 && !prev[0].productName && !prev[0].totalCost) {
+                                  return formattedItems;
+                              }
+                              return [...prev, ...formattedItems];
+                          });
+                          showSuccess("Boleta escaneada con éxito");
+                      } else {
+                          showError("No se encontraron productos en la boleta.");
+                      }
+                  } catch (error) {
+                      console.error(error);
+                      showError("No se pudo leer la boleta. Revisa la consola o tu API Key.");
+                  } finally {
+                      setIsScanning(false);
+                      if (fileInputRef.current) fileInputRef.current.value = '';
+                  }
+              };
+              reader.readAsDataURL(file);
+          };
+
+          const handleUpdateItem = (idx, field, value) => {
+              const newItems = [...items];
+              const item = newItems[idx];
+              item[field] = value;
+
+              const u = parseFloat(item.units) || 0;
+
+              if (field === 'units') {
+                  if (item.lastEdited === 'unitPrice' && item.unitPrice) {
+                      item.totalCost = Math.round(u * parseFloat(item.unitPrice));
+                  } else if (item.lastEdited === 'totalCost' && item.totalCost) {
+                      item.unitPrice = u > 0 ? Math.round(parseFloat(item.totalCost) / u) : '';
+                  }
+              } else if (field === 'unitPrice') {
+                  item.lastEdited = 'unitPrice';
+                  if (value && u > 0) item.totalCost = Math.round(u * parseFloat(value));
+                  else if (!value) item.totalCost = '';
+              } else if (field === 'totalCost') {
+                  item.lastEdited = 'totalCost';
+                  if (value && u > 0) item.unitPrice = Math.round(parseFloat(value) / u);
+                  else if (!value) item.unitPrice = '';
+              }
+
+              setItems(newItems);
+          };
+
+          const handleRemoveItem = (idx) => {
+              const newItems = [...items];
+              newItems.splice(idx, 1);
+              setItems(newItems);
+          };
+
+          const totalAmount = items.reduce((acc, item) => acc + (parseFloat(item.totalCost) || 0), 0);
+
+          const handleSubmit = (e) => {
+              e.preventDefault();
+              if (!supplier.trim()) return;
+              const validItems = items.filter(i => i.productName.trim() && parseFloat(i.units) > 0 && parseFloat(i.totalCost) >= 0);
+              if (validItems.length === 0) return;
+              onSave({ supplier: supplier.trim(), status, items: validItems, totalAmount });
+          };
+
+          return (
+              <FormModal title="Registrar Compra" onClose={onClose}>
+                  <div className="mb-4">
+                      <button 
+                          onClick={() => fileInputRef.current && fileInputRef.current.click()} 
+                          disabled={isScanning}
+                          type="button"
+                          className="w-full bg-blue-50 text-blue-700 font-bold py-3 rounded-xl border border-blue-200 active:bg-blue-100 transition-colors flex items-center justify-center gap-2"
+                      >
+                          {isScanning ? (
+                              <span className="animate-pulse">Escaneando boleta... por favor espera</span>
+                          ) : (
+                              <><IconCamera size={20} /> Escanear Boleta con Cámara</>
+                          )}
+                      </button>
+                      <input 
+                          type="file" 
+                          accept="image/*" 
+                          capture="environment" 
+                          ref={fileInputRef} 
+                          onChange={handleImageUpload} 
+                          className="hidden" 
+                      />
+                  </div>
+                  <form onSubmit={handleSubmit} className="space-y-4">
+                      <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Proveedor / Local</label>
+                          <input type="text" value={supplier} onChange={e => setSupplier(e.target.value)} required className="w-full p-3 border border-gray-300 rounded-xl outline-none" placeholder="Ej. Supermercado Mayorista" />
+                      </div>
+                      
+                      <div className="space-y-3">
+                          <label className="block text-sm font-medium text-gray-700">Productos Comprados</label>
+                          {items.map((item, idx) => (
+                              <div key={idx} className="bg-gray-50 p-3 rounded-xl border border-gray-200 space-y-2 relative">
+                                  {items.length > 1 && (
+                                    <button type="button" onClick={() => handleRemoveItem(idx)} className="absolute top-2 right-2 text-red-400 hover:text-red-600">
+                                        <IconX size={18}/>
+                                    </button>
+                                  )}
+                                  <div>
+                                    <input type="text" list="prod-list" required value={item.productName} onChange={e => handleUpdateItem(idx, 'productName', e.target.value)} className="w-full p-2 text-sm border border-gray-300 rounded-lg outline-none bg-white" placeholder="Producto (Ej. Harina)" />
+                                  </div>
+                                  <div className="grid grid-cols-3 gap-2">
+                                      <div>
+                                        <label className="text-[10px] text-gray-500 uppercase font-bold truncate">Unidades</label>
+                                        <input type="number" step="any" required value={item.units} onChange={e => handleUpdateItem(idx, 'units', e.target.value)} className="w-full p-2 text-sm border border-gray-300 rounded-lg outline-none" placeholder="Ej. 10" />
+                                      </div>
+                                      <div>
+                                        <label className="text-[10px] text-gray-500 uppercase font-bold truncate">P. Unitario ($)</label>
+                                        <input type="number" step="any" required value={item.unitPrice} onChange={e => handleUpdateItem(idx, 'unitPrice', e.target.value)} className="w-full p-2 text-sm border border-gray-300 rounded-lg outline-none" placeholder="Ej. 500" />
+                                      </div>
+                                      <div>
+                                        <label className="text-[10px] text-gray-500 uppercase font-bold truncate">P. Total ($)</label>
+                                        <input type="number" step="any" required value={item.totalCost} onChange={e => handleUpdateItem(idx, 'totalCost', e.target.value)} className="w-full p-2 text-sm border border-gray-300 rounded-lg outline-none" placeholder="Ej. 5000" />
+                                      </div>
+                                  </div>
+                              </div>
+                          ))}
+                          <button type="button" onClick={() => setItems([...items, { productName: '', units: '', unitPrice: '', totalCost: '', lastEdited: 'totalCost' }])} className="text-indigo-600 text-sm font-bold flex items-center gap-1">+ Agregar otro producto</button>
+                      </div>
+
+                      <div className="pt-2 border-t border-gray-200">
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Estado de la factura / boleta</label>
+                          <select value={status} onChange={e => setStatus(e.target.value)} className="w-full p-3 border border-gray-300 rounded-xl outline-none bg-white">
+                              <option value="pagado">Pagado ahora (Descontar de caja)</option>
+                              <option value="pendiente">A crédito / Pendiente (Por pagar)</option>
+                          </select>
+                      </div>
+
+                      <div className="pt-2 flex justify-between items-center bg-indigo-50 p-3 rounded-xl border border-indigo-100">
+                          <span className="font-semibold text-indigo-900">Total Compra:</span>
+                          <span className="text-xl font-black text-indigo-700">{formatMoney(totalAmount)}</span>
+                      </div>
+
+                      <button type="submit" className="w-full bg-indigo-600 text-white font-bold py-4 rounded-xl mt-2 active:bg-indigo-700">Guardar Compra Completa</button>
+                  </form>
+              </FormModal>
+          );
+      };
+
+      const RecipeForm = ({ suppliersData, onSave, onClose }) => {
+          const [name, setName] = useState('');
+          const [ingredients, setIngredients] = useState([{ supplierItemId: '', qty: '' }]);
+          const enrichedSuppliers = suppliersData.map(s => ({ ...s, unitPrice: s.cost / s.units }));
+
+          const handleUpdateIngredient = (idx, field, value) => {
+              const newIng = [...ingredients];
+              newIng[idx][field] = value;
+              setIngredients(newIng);
+          };
+          const handleRemoveIngredient = (idx) => {
+              const newIng = [...ingredients];
+              newIng.splice(idx, 1);
+              setIngredients(newIng);
+          };
+
+          const totalCost = ingredients.reduce((acc, ing) => {
+              if (!ing.supplierItemId || !ing.qty) return acc;
+              const supp = enrichedSuppliers.find(s => s.id === ing.supplierItemId);
+              return acc + (supp ? supp.unitPrice * parseFloat(ing.qty) : 0);
+            }, 0);
+
+          const handleSubmit = (e) => {
+              e.preventDefault();
+              if (!name.trim()) return;
+              const finalIngredients = ingredients.filter(ing => ing.supplierItemId && ing.qty > 0).map(ing => {
+                  const supp = enrichedSuppliers.find(s => s.id === ing.supplierItemId);
+                  return {
+                      supplierItemId: ing.supplierItemId, productName: supp.product,
+                      supplier: supp.supplier, qty: parseFloat(ing.qty),
+                      cost: supp.unitPrice * parseFloat(ing.qty)
+                  };
+              });
+              if (finalIngredients.length === 0) return;
+              onSave({ id: Date.now().toString(), name, ingredients: finalIngredients, totalCost, date: new Date().toISOString() });
+          };
+
+          if (suppliersData.length === 0) {
+              return (
+                  <FormModal title="Crear Receta" onClose={onClose}>
+                      <div className="text-center p-4 text-gray-500">
+                          Primero debes registrar compras en Proveedores para usar los insumos.
+                      </div>
+                  </FormModal>
+              );
+          }
+
+          return (
+              <FormModal title="Calculadora de Receta" onClose={onClose}>
+                  <form onSubmit={handleSubmit} className="space-y-4">
+                      <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Nombre de la Receta</label>
+                          <input type="text" value={name} onChange={e => setName(e.target.value)} required className="w-full p-3 border border-gray-300 rounded-xl outline-none" placeholder="Ej. Torta de Chocolate" />
+                      </div>
+                      
+                      <div className="space-y-3">
+                          <label className="block text-sm font-medium text-gray-700">Insumos Usados</label>
+                          {ingredients.map((ing, idx) => (
+                              <div key={idx} className="flex gap-2 items-center bg-gray-50 p-2 rounded-xl border border-gray-100">
+                                  <div className="flex-1 space-y-2">
+                                      <select required value={ing.supplierItemId} onChange={e => handleUpdateIngredient(idx, 'supplierItemId', e.target.value)} className="w-full p-2 text-sm border border-gray-300 rounded-lg outline-none bg-white">
+                                          <option value="">Seleccionar compra...</option>
+                                          {enrichedSuppliers.map(s => (
+                                              <option key={s.id} value={s.id}>{s.product} ({s.supplier}) - {formatMoney(s.unitPrice)} c/u</option>
+                                          ))}
+                                      </select>
+                                      <input type="number" step="any" required value={ing.qty} onChange={e => handleUpdateIngredient(idx, 'qty', e.target.value)} className="w-full p-2 text-sm border border-gray-300 rounded-lg outline-none" placeholder="Cantidad usada (ej. 0.5)" />
+                                  </div>
+                                  <button type="button" onClick={() => handleRemoveIngredient(idx)} className="p-2 text-red-500 hover:bg-red-50 rounded-lg"><IconTrash size={18}/></button>
+                              </div>
+                          ))}
+                          <button type="button" onClick={() => setIngredients([...ingredients, { supplierItemId: '', qty: '' }])} className="text-indigo-600 text-sm font-medium flex items-center gap-1">+ Agregar otro ingrediente</button>
+                      </div>
+
+                      <div className="pt-4 border-t border-gray-100 flex justify-between items-center">
+                          <span className="font-semibold text-gray-700">Costo Total:</span>
+                          <span className="text-xl font-bold text-indigo-600">{formatMoney(totalCost)}</span>
+                      </div>
+                      <button type="submit" className="w-full bg-indigo-600 text-white font-bold py-4 rounded-xl mt-4 active:bg-indigo-700">Guardar Receta</button>
+                  </form>
+              </FormModal>
+          );
+      };
+
+      // --- VISTAS PRINCIPALES ---
+
+      const HomeView = () => {
+        const totalStock = Object.values(stockByProduct).reduce((a, b) => a + b, 0);
+        return (
+          <div className="px-4 pb-24 space-y-6">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center">
+                <p className="text-sm text-gray-500 mb-1">Caja Real</p>
+                <p className={`text-xl font-bold ${balance >= 0 ? 'text-green-600' : 'text-red-600'}`}>{formatMoney(balance)}</p>
+              </div>
+              <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center">
+                <p className="text-sm text-gray-500 mb-1">Stock Total</p>
+                <p className="text-2xl font-bold text-indigo-600">{totalStock} <span className="text-sm font-normal text-gray-400">unid.</span></p>
+              </div>
+            </div>
+
+            <div>
+              <h2 className="text-gray-800 font-semibold mb-3 px-1">Acciones Rápidas</h2>
+              <div className="grid grid-cols-2 gap-3 mb-3">
+                <button onClick={() => openForm('sale')} className="bg-indigo-50 text-indigo-900 active:bg-indigo-100 p-3 rounded-2xl flex flex-col items-center gap-1 border border-indigo-100 transition-colors">
+                  <IconCart className="text-indigo-600" size={24} />
+                  <span className="text-xs font-medium">Venta 1x1</span>
+                </button>
+                <button onClick={() => openForm('dailySale')} className="bg-indigo-600 text-white active:bg-indigo-700 p-3 rounded-2xl flex flex-col items-center gap-1 shadow-sm transition-colors">
+                  <IconClipboard className="text-white" size={24} />
+                  <span className="text-xs font-bold">Venta Diaria</span>
+                </button>
+                <button onClick={() => openForm('production')} className="bg-emerald-50 text-emerald-900 active:bg-emerald-100 p-3 rounded-2xl flex flex-col items-center gap-1 border border-emerald-100 transition-colors">
+                  <IconPackage className="text-emerald-600" size={24} />
+                  <span className="text-xs font-medium">Producir</span>
+                </button>
+                <button onClick={() => openForm('expense')} className="bg-red-50 text-red-900 active:bg-red-100 p-3 rounded-2xl flex flex-col items-center gap-1 border border-red-100 transition-colors">
+                  <IconTrendingDown className="text-red-600" size={24} />
+                  <span className="text-xs font-medium">Gasto</span>
+                </button>
+              </div>
+              <button onClick={() => openForm('income')} className="w-full bg-green-50 text-green-900 active:bg-green-100 p-3 rounded-2xl flex items-center justify-center gap-2 border border-green-100 transition-colors">
+                <IconTrendingUp className="text-green-600" size={20} />
+                <span className="text-xs font-medium">Registrar Otro Ingreso</span>
+              </button>
+            </div>
+
+            <div>
+              <h2 className="text-gray-800 font-semibold mb-3 px-1 flex items-center gap-2"><IconHistory size={18} /> Actividad Reciente</h2>
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                {transactions.length === 0 ? (
+                   <div className="p-6 text-center text-gray-400 text-sm">No hay actividad aún.</div>
+                ) : (
+                  <div className="divide-y divide-gray-50">
+                    {transactions.slice(0, 4).map(tx => (
+                      <div key={tx.id} className="p-4 flex justify-between items-center group">
+                        <div className="flex items-center gap-3">
+                          <div className={`p-2 rounded-full ${tx.type === 'income' ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'}`}>
+                            {tx.type === 'income' ? <IconArrowUpCircle size={20} /> : <IconArrowDownCircle size={20} />}
+                          </div>
+                          <div>
+                            <p className="font-medium text-gray-800 text-sm flex flex-wrap items-center gap-2 line-clamp-1">
+                                {tx.description}
+                                {tx.status === 'pendiente' && <span className="bg-yellow-100 text-yellow-700 text-[10px] px-2 py-0.5 rounded-full font-bold">Pendiente</span>}
+                                {tx.paymentMethod && tx.status !== 'pendiente' && <span className="bg-blue-100 text-blue-700 text-[10px] px-2 py-0.5 rounded-full font-bold">{tx.paymentMethod}</span>}
+                            </p>
+                            {tx.isSale && tx.saleDetails && (
+                                <p className="text-[11px] text-indigo-500 font-medium leading-none mt-0.5 mb-0.5">
+                                    Producto: {tx.saleDetails.product}
+                                </p>
+                            )}
+                            <p className="text-xs text-gray-400">{formatDate(tx.date)}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <span className={`font-semibold ${tx.type === 'income' ? 'text-green-600' : 'text-red-600'}`}>
+                              {tx.type === 'income' ? '+' : '-'}{formatMoney(tx.amount)}
+                            </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        );
+      };
+
+      const FinanceView = () => (
+        <div className="px-4 pb-24">
+          <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 mb-6">
+            <div className="flex justify-between items-center mb-4">
+              <span className="text-gray-500">Ingresos Efectivos</span>
+              <span className="font-semibold text-green-600">{formatMoney(totalIncome)}</span>
+            </div>
+            <div className="flex justify-between items-center mb-4">
+              <span className="text-gray-500">Gastos Pagados</span>
+              <span className="font-semibold text-red-600">{formatMoney(totalExpense)}</span>
+            </div>
+            <div className="h-px bg-gray-100 w-full mb-4"></div>
+            <div className="flex justify-between items-center">
+              <span className="font-medium text-gray-800">Caja Real</span>
+              <span className={`font-bold text-lg ${balance >= 0 ? 'text-indigo-600' : 'text-red-600'}`}>{formatMoney(balance)}</span>
+            </div>
+          </div>
+
+          <h2 className="text-gray-800 font-semibold mb-3 px-1">Historial de Caja</h2>
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 divide-y divide-gray-50">
+            {transactions.length === 0 ? (
+              <div className="p-8 text-center text-gray-400">Sin registros.</div>
+            ) : (
+              transactions.map(tx => (
+                <div key={tx.id} className={`p-4 flex justify-between items-center ${tx.status === 'pendiente' ? 'opacity-60 bg-gray-50' : ''}`}>
+                  <div className="flex-1 pr-4">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <p className="font-medium text-gray-800">{tx.description}</p>
+                      {tx.paymentMethod && tx.status !== 'pendiente' && <span className="bg-blue-100 text-blue-700 text-[10px] px-2 py-0.5 rounded-full font-bold">{tx.paymentMethod}</span>}
+                    </div>
+                    {tx.isSale && tx.saleDetails && (
+                        <p className="text-[11px] text-indigo-500 font-medium leading-none mt-1">
+                            Producto: {tx.saleDetails.product}
+                        </p>
+                    )}
+                    <p className="text-xs text-gray-400 flex items-center gap-2 mt-1">
+                        {formatDate(tx.date)}
+                        {tx.status === 'pendiente' && <span className="text-yellow-600 font-semibold">Pendiente</span>}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                      <span className={`font-semibold ${tx.type === 'income' ? 'text-green-600' : 'text-red-600'}`}>
+                        {tx.type === 'income' ? '+' : '-'}{formatMoney(tx.amount)}
+                      </span>
+                      <button onClick={() => requestDeleteTransaction(tx)} className="text-gray-300 hover:text-red-500 active:text-red-600 p-1 rounded-md transition-colors" title="Eliminar">
+                          <IconTrash size={18} />
+                      </button>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      );
+
+      const PendingView = () => {
+        const pendingIncomes = transactions.filter(t => t.type === 'income' && t.status === 'pendiente');
+        const pendingExpenses = transactions.filter(t => t.type === 'expense' && t.status === 'pendiente');
+
+        return (
+          <div className="px-4 pb-24 space-y-6">
+            <div>
+              <div className="bg-emerald-50 border border-emerald-100 p-4 rounded-2xl mb-4 flex justify-between items-center">
+                  <div>
+                    <p className="text-emerald-800 text-sm font-medium">Cuentas por Cobrar</p>
+                    <p className="text-2xl font-bold text-emerald-600">{formatMoney(pendingToCollect)}</p>
+                  </div>
+              </div>
+              <h2 className="text-gray-800 font-semibold mb-3 px-1">Te deben</h2>
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 divide-y divide-gray-50">
+                {pendingIncomes.length === 0 ? (
+                  <div className="p-6 text-center text-gray-400 text-sm">No hay cobros pendientes.</div>
+                ) : (
+                  pendingIncomes.map(tx => (
+                    <div key={tx.id} className="p-4 flex flex-col gap-3">
+                        <div className="flex justify-between items-start">
+                            <div>
+                                <p className="font-medium text-gray-800">{tx.description}</p>
+                                {tx.isSale && tx.saleDetails && (
+                                    <p className="text-[11px] text-indigo-500 font-medium mb-1 mt-0.5">
+                                        Producto: {tx.saleDetails.product}
+                                    </p>
+                                )}
+                                <p className="text-xs text-gray-400">{formatDate(tx.date)}</p>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <span className="font-bold text-emerald-600">{formatMoney(tx.amount)}</span>
+                                <button onClick={() => requestDeleteTransaction(tx)} className="text-gray-300 hover:text-red-500 p-1"><IconTrash size={18}/></button>
+                            </div>
+                        </div>
+                        <button onClick={() => setPayingTx(tx)} className="w-full py-2 bg-emerald-100 text-emerald-700 font-semibold rounded-lg text-sm flex items-center justify-center gap-2 active:bg-emerald-200">
+                            <IconCheckCircle size={16} /> Marcar como Pagado
+                        </button>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+
+            <div>
+              <div className="bg-red-50 border border-red-100 p-4 rounded-2xl mb-4 flex justify-between items-center">
+                  <div>
+                    <p className="text-red-800 text-sm font-medium">Cuentas por Pagar</p>
+                    <p className="text-2xl font-bold text-red-600">{formatMoney(pendingToPay)}</p>
+                  </div>
+              </div>
+              <h2 className="text-gray-800 font-semibold mb-3 px-1">Tú debes</h2>
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 divide-y divide-gray-50">
+                {pendingExpenses.length === 0 ? (
+                  <div className="p-6 text-center text-gray-400 text-sm">No hay deudas pendientes.</div>
+                ) : (
+                  pendingExpenses.map(tx => (
+                    <div key={tx.id} className="p-4 flex flex-col gap-3">
+                        <div className="flex justify-between items-start">
+                            <div>
+                                <p className="font-medium text-gray-800">{tx.description}</p>
+                                {tx.isSale && tx.saleDetails && (
+                                    <p className="text-[11px] text-indigo-500 font-medium mb-1 mt-0.5">
+                                        Producto: {tx.saleDetails.product}
+                                    </p>
+                                )}
+                                <p className="text-xs text-gray-400">{formatDate(tx.date)}</p>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <span className="font-bold text-red-600">{formatMoney(tx.amount)}</span>
+                                <button onClick={() => requestDeleteTransaction(tx)} className="text-gray-300 hover:text-red-500 p-1"><IconTrash size={18} /></button>
+                            </div>
+                        </div>
+                        <button onClick={() => setPayingTx(tx)} className="w-full py-2 bg-red-100 text-red-700 font-semibold rounded-lg text-sm flex items-center justify-center gap-2 active:bg-red-200">
+                            <IconCheckCircle size={16} /> Marcar como Pagado
+                        </button>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          </div>
+        );
+      };
+
+      const InventoryView = () => (
+        <div className="px-4 pb-24">
+          <div className="grid grid-cols-2 gap-3 mb-6 mt-4">
+            {availableProducts.length === 0 ? (
+              <div className="col-span-2 bg-white p-6 rounded-2xl shadow-sm border border-gray-100 text-center text-gray-500">
+                Aún no has agregado productos ni registrado compras.
+              </div>
+            ) : (
+              Object.entries(stockByProduct).map(([name, qty]) => (
+                <div key={name} className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center relative">
+                  <p className="text-sm text-gray-500 mb-1 truncate w-full px-2">{name}</p>
+                  <p className="text-2xl font-bold text-indigo-600">{qty}</p>
+                </div>
+              ))
+            )}
+          </div>
+          
+          <h2 className="text-gray-800 font-semibold mb-3 px-1">Flujo de Inventario</h2>
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 divide-y divide-gray-50">
+            {inventoryLogs.length === 0 ? (
+              <div className="p-8 text-center text-gray-400">Sin movimientos de stock.</div>
+            ) : (
+              inventoryLogs.map(log => (
+                <div key={log.id} className="p-4 flex justify-between items-center">
+                  <div className="flex items-center gap-3">
+                     <div className={`p-2 rounded-full ${log.type === 'production' ? 'bg-emerald-100 text-emerald-600' : 'bg-orange-100 text-orange-600'}`}>
+                        {log.type === 'production' ? <IconPlusCircle size={20} /> : <IconCart size={20} />}
+                      </div>
+                    <div>
+                      <p className="font-medium text-gray-800 text-sm">{log.description}</p>
+                      <p className="text-xs text-gray-400">{formatDate(log.date)}</p>
+                    </div>
+                  </div>
+                  <span className={`font-semibold ${log.type === 'production' ? 'text-emerald-600' : 'text-orange-600'}`}>
+                    {log.type === 'production' ? '+' : '-'}{log.units} unid.
+                  </span>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      );
+
+      const SuppliersView = () => {
+        const enrichedSuppliers = suppliersData.map(s => ({ ...s, unitPrice: s.cost / s.units }));
+        const minPrices = {};
+        enrichedSuppliers.forEach(s => {
+            if (!minPrices[s.product] || s.unitPrice < minPrices[s.product]) minPrices[s.product] = s.unitPrice;
+        });
+
+        enrichedSuppliers.sort((a, b) => {
+            if (a.product < b.product) return -1;
+            if (a.product > b.product) return 1;
+            return a.unitPrice - b.unitPrice;
+        });
+
+        return (
+          <div className="px-4 pb-24">
+             <div className="flex justify-between items-center mb-4 px-1 mt-4">
+                <h2 className="text-gray-800 font-semibold">Costos Registrados</h2>
+                <button onClick={() => setActiveForm('purchase')} className="bg-indigo-600 text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-1 active:bg-indigo-700 transition-colors shadow-sm">
+                  <IconCart size={16} /> Nueva Compra
+                </button>
+             </div>
+
+             {enrichedSuppliers.length === 0 ? (
+                 <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 text-center text-gray-500">
+                    Aún no hay compras registradas. Presiona "Nueva Compra" para empezar.
+                 </div>
+             ) : (
+                 <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden overflow-x-auto">
+                    <table className="w-full text-left border-collapse min-w-max">
+                        <thead>
+                            <tr className="bg-indigo-50 border-b border-indigo-100 text-indigo-900 text-sm">
+                                <th className="p-3 font-semibold whitespace-nowrap">Producto</th>
+                                <th className="p-3 font-semibold whitespace-nowrap">Proveedor</th>
+                                <th className="p-3 font-semibold text-right whitespace-nowrap">Cant.</th>
+                                <th className="p-3 font-semibold text-right whitespace-nowrap">Costo</th>
+                                <th className="p-3 font-semibold text-right whitespace-nowrap">C/U</th>
+                                <th className="p-3 font-semibold text-center"></th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-50 text-sm">
+                            {enrichedSuppliers.map((item) => {
+                                const isBestPrice = item.unitPrice === minPrices[item.product];
+                                return (
+                                    <tr key={item.id} className={`hover:bg-gray-50 transition-colors ${isBestPrice ? 'bg-green-50/30' : ''}`}>
+                                        <td className="p-3 font-medium text-gray-800 whitespace-nowrap">{item.product}</td>
+                                        <td className="p-3 text-gray-600 whitespace-nowrap">
+                                            {item.supplier}
+                                            {isBestPrice && <span className="ml-2 bg-green-100 text-green-700 text-[10px] px-2 py-0.5 rounded-full inline-block font-bold">Mejor</span>}
+                                        </td>
+                                        <td className="p-3 text-gray-500 text-right">{item.units}</td>
+                                        <td className="p-3 text-gray-500 text-right">{formatMoney(item.cost)}</td>
+                                        <td className={`p-3 text-right font-bold ${isBestPrice ? 'text-green-600' : 'text-gray-700'}`}>
+                                            {formatMoney(item.unitPrice)}
+                                        </td>
+                                        <td className="p-3 text-center">
+                                            <button onClick={() => handleDeleteSupplier(item.id)} className="text-gray-300 hover:text-red-500 transition-colors">
+                                                <IconTrash size={16}/>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                );
+                            })}
+                        </tbody>
+                    </table>
+                 </div>
+             )}
+          </div>
+        );
+      };
+
+      const RecipesView = () => (
+          <div className="px-4 pb-24">
+             <div className="flex justify-between items-center mb-4 px-1 mt-4">
+                <h2 className="text-gray-800 font-semibold">Mis Recetas</h2>
+                <button onClick={() => setActiveForm('recipe')} className="bg-indigo-600 text-white px-3 py-1.5 rounded-xl text-sm font-medium flex items-center gap-1 active:bg-indigo-700 transition-colors">
+                  <IconPlusCircle size={16} /> Crear
+                </button>
+             </div>
+             
+             {recipes.length === 0 ? (
+                 <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 text-center text-gray-500">
+                    Aún no has creado recetas.
+                 </div>
+             ) : (
+                 <div className="space-y-4">
+                     {recipes.map(recipe => (
+                         <div key={recipe.id} className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
+                             <div className="flex justify-between items-start mb-3">
+                                 <h3 className="font-bold text-gray-800 text-lg">{recipe.name}</h3>
+                                 <div className="flex items-center gap-3">
+                                    <span className="font-bold text-indigo-600">{formatMoney(recipe.totalCost)}</span>
+                                    <button onClick={() => handleDeleteRecipe(recipe.id)} className="text-gray-300 hover:text-red-500"><IconTrash size={18}/></button>
+                                 </div>
+                             </div>
+                             <div className="text-sm text-gray-500 space-y-2 bg-gray-50 p-3 rounded-xl">
+                                 {recipe.ingredients.map((ing, idx) => (
+                                     <div key={idx} className="flex justify-between items-center border-b border-gray-200/50 pb-1 last:border-0 last:pb-0">
+                                         <div>
+                                            <span className="font-medium text-gray-700">{ing.qty}x</span> {ing.productName} 
+                                            <span className="text-[10px] ml-1 bg-gray-200 px-1.5 py-0.5 rounded text-gray-600">{ing.supplier}</span>
+                                         </div>
+                                         <span className="text-gray-700">{formatMoney(ing.cost)}</span>
+                                     </div>
+                                 ))}
+                             </div>
+                         </div>
+                     ))}
+                 </div>
+             )}
+          </div>
+      );
+
+      const HistoricalView = () => {
+        const getHistoricalData = () => {
+            const monthlyData = {};
+            const realTransactions = transactions.filter(t => t.status !== 'pendiente');
+            realTransactions.forEach(tx => {
+                const d = new Date(tx.date);
+                const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+                const monthName = new Intl.DateTimeFormat('es-ES', { month: 'long', year: 'numeric' }).format(d);
+                const monthLabel = monthName.charAt(0).toUpperCase() + monthName.slice(1);
+                if (!monthlyData[key]) monthlyData[key] = { key, monthLabel, sales: 0, expenses: 0 };
+                if (tx.type === 'expense') monthlyData[key].expenses += tx.amount;
+                else if (tx.type === 'income') monthlyData[key].sales += tx.amount;
+            });
+            return Object.values(monthlyData).sort((a, b) => b.key.localeCompare(a.key));
+        };
+        const data = getHistoricalData();
+        return (
+            <div className="px-4 pb-24">
+                <h2 className="text-gray-800 font-semibold mb-4 px-1 mt-4">Resumen Mensual (Solo Pagados)</h2>
+                {data.length === 0 ? (
+                    <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 text-center text-gray-500">Sin registros reales.</div>
+                ) : (
+                    <div className="space-y-4">
+                        {data.map(month => {
+                            const margenBruto = month.sales - month.expenses;
+                            return (
+                                <div key={month.key} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                                    <div className="bg-indigo-50 px-4 py-3 border-b border-indigo-100 font-bold text-indigo-900">{month.monthLabel}</div>
+                                    <div className="p-4 space-y-3">
+                                        <div className="flex justify-between items-center text-sm"><span className="text-gray-500">Ingresos</span><span className="font-semibold text-green-600">{formatMoney(month.sales)}</span></div>
+                                        <div className="flex justify-between items-center text-sm"><span className="text-gray-500">Gastos (Compras/Otros)</span><span className="font-semibold text-red-600">{formatMoney(month.expenses)}</span></div>
+                                        <div className="h-px w-full bg-gray-100 my-2"></div>
+                                        <div className="flex justify-between items-center"><span className="font-medium text-gray-800">Margen Bruto</span><span className={`font-bold text-lg ${margenBruto >= 0 ? 'text-indigo-600' : 'text-red-600'}`}>{formatMoney(margenBruto)}</span></div>
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                )}
+            </div>
+        );
+      };
+
+      return (
+        <div className="min-h-screen bg-gray-50 max-w-md mx-auto relative font-sans">
+          
+          <datalist id="prod-list">
+              {availableProducts.map(prod => <option key={prod} value={prod} />)}
+          </datalist>
+
+          <NotificationToasts />
+          <ConfirmModal />
+
+          {activeTab === 'home' && <Header title="Mi Negocio" />}
+          {activeTab === 'finance' && <Header title="Control de Caja" />}
+          {activeTab === 'inventory' && <Header title="Stock" />}
+          {activeTab === 'suppliers' && <Header title="Proveedores y Compras" />}
+          {activeTab === 'recipes' && <Header title="Calculadora de Recetas" />}
+          {activeTab === 'pending' && <Header title="Deudas y Cobranza" />}
+          {activeTab === 'history' && <Header title="Reporte Histórico" />}
+
+          <main>
+            {activeTab === 'home' && <HomeView />}
+            {activeTab === 'finance' && <FinanceView />}
+            {activeTab === 'inventory' && <InventoryView />}
+            {activeTab === 'suppliers' && <SuppliersView />}
+            {activeTab === 'recipes' && <RecipesView />}
+            {activeTab === 'pending' && <PendingView />}
+            {activeTab === 'history' && <HistoricalView />}
+          </main>
+
+          {/* Menú Inferior (Scroll Horizontal) */}
+          <nav className="fixed bottom-0 w-full max-w-md bg-white border-t border-gray-200 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] z-40 overflow-x-auto">
+            <div className="flex justify-between p-1 pb-6 sm:pb-1 min-w-max px-2 gap-2">
+                <button onClick={() => setActiveTab('home')} className={`flex flex-col items-center px-3 py-2 rounded-xl transition-colors min-w-[60px] ${activeTab === 'home' ? 'text-indigo-600 bg-indigo-50' : 'text-gray-400'}`}>
+                  <IconHome size={22} /><span className="text-[9px] mt-1 font-medium">Inicio</span>
+                </button>
+                <button onClick={() => setActiveTab('finance')} className={`flex flex-col items-center px-3 py-2 rounded-xl transition-colors min-w-[60px] ${activeTab === 'finance' ? 'text-indigo-600 bg-indigo-50' : 'text-gray-400'}`}>
+                  <IconWallet size={22} /><span className="text-[9px] mt-1 font-medium">Caja</span>
+                </button>
+                <button onClick={() => setActiveTab('inventory')} className={`flex flex-col items-center px-3 py-2 rounded-xl transition-colors min-w-[60px] ${activeTab === 'inventory' ? 'text-indigo-600 bg-indigo-50' : 'text-gray-400'}`}>
+                  <IconPackage size={22} /><span className="text-[9px] mt-1 font-medium">Stock</span>
+                </button>
+                <button onClick={() => setActiveTab('suppliers')} className={`flex flex-col items-center px-3 py-2 rounded-xl transition-colors min-w-[60px] ${activeTab === 'suppliers' ? 'text-indigo-600 bg-indigo-50' : 'text-gray-400'}`}>
+                  <IconTruck size={22} /><span className="text-[9px] mt-1 font-medium">Prov.</span>
+                </button>
+                <button onClick={() => setActiveTab('recipes')} className={`flex flex-col items-center px-3 py-2 rounded-xl transition-colors min-w-[60px] ${activeTab === 'recipes' ? 'text-indigo-600 bg-indigo-50' : 'text-gray-400'}`}>
+                  <IconUtensils size={22} /><span className="text-[9px] mt-1 font-medium">Recetas</span>
+                </button>
+                <button onClick={() => setActiveTab('pending')} className={`flex flex-col items-center px-3 py-2 rounded-xl transition-colors min-w-[60px] ${activeTab === 'pending' ? 'text-indigo-600 bg-indigo-50' : 'text-gray-400 relative'}`}>
+                  <IconClipboard size={22} /><span className="text-[9px] mt-1 font-medium">Deudas</span>
+                  {(pendingToCollect > 0 || pendingToPay > 0) && <span className="absolute top-1 right-2 w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>}
+                </button>
+                <button onClick={() => setActiveTab('history')} className={`flex flex-col items-center px-3 py-2 rounded-xl transition-colors min-w-[60px] ${activeTab === 'history' ? 'text-indigo-600 bg-indigo-50' : 'text-gray-400'}`}>
+                  <IconBarChart size={22} /><span className="text-[9px] mt-1 font-medium">Historia</span>
+                </button>
+            </div>
+          </nav>
+
+          {/* FORMULARIO DE CONFIGURACIÓN / RESPALDOS */}
+          {activeForm === 'settings' && (
+              <FormModal title="Configuración y Respaldos" onClose={() => setActiveForm(null)}>
+                <div className="space-y-6">
+                  {/* Descarga Manual */}
+                  <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
+                      <h4 className="font-bold text-gray-800 mb-1">Descargar Historial</h4>
+                      <p className="text-xs text-gray-500 mb-3">Obtén un archivo Excel (.csv) con todos los registros guardados hasta ahora.</p>
+                      <button onClick={downloadCSV} className="w-full bg-emerald-600 text-white font-bold py-3 rounded-lg active:bg-emerald-700 transition-colors shadow-sm">
+                          Descargar Archivo CSV
+                      </button>
+                  </div>
+
+                  {/* Sincronización Automática con Sheets */}
+                  <div>
+                      <h4 className="font-bold text-gray-800 mb-1">Enlace a Google Sheets</h4>
+                      <p className="text-xs text-gray-500 mb-3 leading-relaxed">
+                          Pega aquí el enlace de tu App Script. Cada vez que registres algo en la app, se creará una fila automáticamente en tu Excel.
+                      </p>
+                      <input 
+                          type="url" 
+                          value={webhookUrl} 
+                          onChange={e => setWebhookUrl(e.target.value)} 
+                          className="w-full p-3 border border-gray-300 rounded-xl outline-none text-sm mb-3" 
+                          placeholder="https://script.google.com/macros/s/..." 
+                      />
+                      <button 
+                          onClick={() => {
+                              localStorage.setItem('googleSheetsWebhook', webhookUrl);
+                              setActiveForm(null);
+                              showSuccess("Enlace guardado");
+                          }} 
+                          className="w-full bg-indigo-600 text-white font-bold py-3 rounded-lg active:bg-indigo-700 transition-colors"
+                      >
+                          Guardar Enlace
+                      </button>
+                  </div>
+                </div>
+              </FormModal>
+          )}
+
+          {/* DEMÁS FORMULARIOS */}
+          {activeForm === 'dailySale' && (
+              <DailySaleForm onSave={handleSaveDailySale} onClose={() => setActiveForm(null)} />
+          )}
+
+          {activeForm === 'dailyReport' && dailyReportData && (
+              <FormModal title="Reporte de Ventas Diarias" onClose={() => { setActiveForm(null); setDailyReportData(null); }}>
+                  <div className="text-center mb-6">
+                      <IconCheckCircle size={48} className="text-emerald-500 mx-auto mb-2" />
+                      <p className="text-gray-600 text-sm">Tus ventas han sido registradas y el stock actualizado automáticamente.</p>
+                  </div>
+                  <div className="bg-gray-50 p-4 rounded-2xl border border-gray-200 space-y-3">
+                      <div className="flex justify-between items-center">
+                          <span className="font-medium text-gray-700 text-sm">Pagado en Efectivo</span>
+                          <span className="font-bold text-green-600">{formatMoney(dailyReportData.totalEfectivo)}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                          <span className="font-medium text-gray-700 text-sm">Pagado por Transfer.</span>
+                          <span className="font-bold text-blue-600">{formatMoney(dailyReportData.totalTransf)}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                          <span className="font-medium text-gray-700 text-sm">Dejado Por Cobrar</span>
+                          <span className="font-bold text-red-500">{formatMoney(dailyReportData.totalPendiente)}</span>
+                      </div>
+                      <hr className="border-gray-300 my-2" />
+                      <div className="flex justify-between items-center text-lg">
+                          <span className="font-black text-gray-900">Total Vendido</span>
+                          <span className="font-black text-indigo-700">{formatMoney(dailyReportData.total)}</span>
+                      </div>
+                  </div>
+                  <button onClick={() => { setActiveForm(null); setDailyReportData(null); }} className="w-full bg-indigo-600 text-white font-bold py-4 rounded-xl mt-6 active:bg-indigo-700">
+                      Cerrar Reporte
+                  </button>
+              </FormModal>
+          )}
+
+          {activeForm === 'purchase' && (
+              <PurchaseForm onSave={handleSavePurchase} onClose={() => setActiveForm(null)} />
+          )}
+
+          {activeForm === 'recipe' && (
+              <RecipeForm suppliersData={suppliersData} onSave={handleSaveRecipe} onClose={() => setActiveForm(null)} />
+          )}
+
+          {payingTx && (
+            <FormModal title="Confirmar Pago" onClose={() => setPayingTx(null)}>
+              <div className="mb-4 text-gray-700 text-sm">
+                  <p>Estás a punto de registrar el pago de:</p>
+                  <p className="font-bold text-lg mt-1 text-indigo-700">{payingTx.description}</p>
+                  <p className="font-bold text-gray-900 mt-1">Total: {formatMoney(payingTx.amount)}</p>
+              </div>
+              <form onSubmit={(e) => {
+                  e.preventDefault();
+                  handleMarkAsPaid(payingTx.id, e.target.paymentMethod.value);
+              }} className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Método de Pago</label>
+                    <select name="paymentMethod" className="w-full p-3 border border-gray-300 rounded-xl outline-none bg-white">
+                      <option value="Efectivo">Efectivo</option>
+                      <option value="Transferencia">Transferencia</option>
+                    </select>
+                  </div>
+                  <button type="submit" className="w-full bg-indigo-600 text-white font-bold py-4 rounded-xl mt-4 active:bg-indigo-700">
+                    Confirmar Pago
+                  </button>
+              </form>
+            </FormModal>
+          )}
+
+          {activeForm === 'expense' && (
+            <FormModal title="Registrar Gasto" onClose={() => setActiveForm(null)}>
+              <form onSubmit={(e) => handleAddTransaction(e, 'expense')} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Monto ($)</label>
+                  <input type="number" name="amount" required className="w-full p-3 border border-gray-300 rounded-xl outline-none text-lg" placeholder="Ej. 15000" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Concepto</label>
+                  <input type="text" name="description" required className="w-full p-3 border border-gray-300 rounded-xl outline-none" placeholder="Ej. Compra de materiales" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Estado del Pago</label>
+                  <select name="status" className="w-full p-3 border border-gray-300 rounded-xl outline-none bg-white">
+                    <option value="pagado">Pagado (Descontar de caja)</option>
+                    <option value="pendiente">Pendiente (Por pagar)</option>
+                  </select>
+                </div>
+                <button type="submit" className="w-full bg-red-600 text-white font-bold py-4 rounded-xl mt-4 active:bg-red-700">Guardar Gasto</button>
+              </form>
+            </FormModal>
+          )}
+
+          {activeForm === 'income' && (
+            <FormModal title="Otro Ingreso (Sin stock)" onClose={() => setActiveForm(null)}>
+              <form onSubmit={(e) => handleAddTransaction(e, 'income')} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Monto ($)</label>
+                  <input type="number" name="amount" required className="w-full p-3 border border-gray-300 rounded-xl outline-none text-lg" placeholder="Ej. 50000" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Concepto</label>
+                  <input type="text" name="description" required className="w-full p-3 border border-gray-300 rounded-xl outline-none" placeholder="Ej. Servicio prestado" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Estado del Pago</label>
+                  <select name="status" className="w-full p-3 border border-gray-300 rounded-xl outline-none bg-white">
+                    <option value="pagado">Pagado (Sumar a caja)</option>
+                    <option value="pendiente">Pendiente (Por cobrar)</option>
+                  </select>
+                </div>
+                <button type="submit" className="w-full bg-green-600 text-white font-bold py-4 rounded-xl mt-4 active:bg-green-700">Guardar Ingreso</button>
+              </form>
+            </FormModal>
+          )}
+
+          {activeForm === 'production' && (
+            <FormModal title="Producción Diaria" onClose={() => setActiveForm(null)}>
+              <form onSubmit={handleAddProduction} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Producto (Elige o escribe uno nuevo)</label>
+                  <input type="text" name="product" list="prod-list" autoComplete="off" required className="w-full p-3 border border-gray-300 rounded-xl outline-none bg-white" placeholder="Ej. Alfajor de Maicena" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Unidades Producidas</label>
+                  <input type="number" name="units" required className="w-full p-3 border border-gray-300 rounded-xl outline-none text-lg" placeholder="Ej. 50" />
+                </div>
+                <button type="submit" className="w-full bg-emerald-600 text-white font-bold py-4 rounded-xl mt-4 active:bg-emerald-700">Sumar al Stock</button>
+              </form>
+            </FormModal>
+          )}
+
+          {activeForm === 'sale' && (
+            <FormModal title="Registrar Venta" onClose={() => setActiveForm(null)}>
+              <form onSubmit={handleAddSale} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Producto a Vender</label>
+                  <select name="product" value={selectedProduct} onChange={(e) => setSelectedProduct(e.target.value)} className="w-full p-3 border border-gray-300 rounded-xl outline-none bg-white">
+                    {availableProducts.map(prod => <option key={prod} value={prod}>{prod}</option>)}
+                  </select>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Unidades</label>
+                      <input type="number" name="units" required max={stockByProduct[selectedProduct] > 0 ? stockByProduct[selectedProduct] : ""} className="w-full p-3 border border-gray-300 rounded-xl outline-none text-lg" placeholder={`Max: ${stockByProduct[selectedProduct]}`} />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Total ($)</label>
+                      <input type="number" name="amount" required className="w-full p-3 border border-gray-300 rounded-xl outline-none text-lg" placeholder="25000" />
+                    </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Cliente / Detalle</label>
+                  <input type="text" name="description" className="w-full p-3 border border-gray-300 rounded-xl outline-none" placeholder={`Ej. Venta de ${selectedProduct}`} />
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Estado del Pago</label>
+                    <select name="status" className="w-full p-3 border border-gray-300 rounded-xl outline-none bg-white">
+                      <option value="pagado">Pagado (Caja)</option>
+                      <option value="pendiente">Pendiente (Cobrar)</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Método</label>
+                    <select name="paymentMethod" className="w-full p-3 border border-gray-300 rounded-xl outline-none bg-white">
+                      <option value="Efectivo">Efectivo</option>
+                      <option value="Transferencia">Transferencia</option>
+                    </select>
+                  </div>
+                </div>
+                <button type="submit" disabled={stockByProduct[selectedProduct] <= 0} className={`w-full text-white font-bold py-4 rounded-xl mt-4 transition-colors ${stockByProduct[selectedProduct] > 0 ? 'bg-indigo-600 active:bg-indigo-700' : 'bg-gray-400 cursor-not-allowed'}`}>
+                  {stockByProduct[selectedProduct] > 0 ? 'Completar Venta' : 'Sin Stock Suficiente'}
+                </button>
+              </form>
+            </FormModal>
+          )}
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
